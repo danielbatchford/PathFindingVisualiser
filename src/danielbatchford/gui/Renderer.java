@@ -10,6 +10,7 @@ import processing.core.PApplet;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Set;
 
 public class Renderer extends PApplet {
@@ -29,6 +30,10 @@ public class Renderer extends PApplet {
     int[] start;
     int[] end;
 
+    boolean renderSearch;
+
+    Random random;
+
     //CHECK START IS WALKABLE
     public static void main(String[] args) {
         PApplet.main(new String[]{"--present", Renderer.class.getName()});
@@ -38,7 +43,7 @@ public class Renderer extends PApplet {
     public void draw() {
 
         fill(255, 255, 234);
-        strokeWeight(2);
+        strokeWeight(1);
         for (int x = 0; x < div[0]; x++) {
             for (int y = 0; y < div[1]; y++) {
                 Box box = grid.getBoxes()[x][y];
@@ -47,33 +52,32 @@ public class Renderer extends PApplet {
                 }
             }
         }
-        strokeWeight(0);
+        if (renderSearch) {
+            strokeWeight(0);
+            State state = logger.getStates().get(0);
+            if (logger.getStates().size() > 1)
+                logger.getStates().remove(0);
+            ArrayList<Box> openList = (ArrayList<Box>) state.openList;
+            Set<Box> closedList = state.closedList;
 
-        State state = logger.getStates().get(0);
-        if (logger.getStates().size() > 1)
-            logger.getStates().remove(0);
-        ArrayList<Box> openList = (ArrayList<Box>) state.openList;
-        Set<Box> closedList = state.closedList;
+            fill(204, 480, 0);
+            for (Box b : closedList) {
+                drawBox(b.getCord());
+            }
 
-        fill(204, 480, 0);
-        for (Box b : closedList) {
-            drawBox(b.getCord());
-        }
+            fill(255, 237, 102);
+            for (Box b : openList) {
+                drawBox(b.getCord());
 
-        fill(255, 237, 102);
-        for (Box b : openList) {
-            drawBox(b.getCord());
+            }
 
-        }
-
-
-        fill(255, 84, 91);
-        if (logger.getStates().size() == 1 && path != null) {
-            for (int[] cords : path) {
-                drawBox(cords);
+            fill(255, 84, 91);
+            if (logger.getStates().size() == 1 && path != null) {
+                for (int[] cords : path) {
+                    drawBox(cords);
+                }
             }
         }
-
         fill(92, 92, 92);
         for (int x = 0; x < div[0]; x++) {
             for (int y = 0; y < div[1]; y++) {
@@ -93,16 +97,20 @@ public class Renderer extends PApplet {
     public void mousePressed() {
         Box box = grid.getBoxes()[mouseX * div[0] / dim[0]][mouseY * div[1] / dim[1]];
 
-        //the below order matters
-        this.eraseMode = !box.isWalkable();
+        eraseMode = !box.isWalkable();
         box.setWalkable(!box.isWalkable());
-
         refreshSearch();
+        renderSearch = false;
     }
 
     @Override
     public void mouseDragged() {
         grid.getBoxes()[mouseX / boxWidth[0]][mouseY / boxWidth[1]].setWalkable(eraseMode);
+    }
+
+    public void mouseReleased() {
+        refreshSearch();
+        renderSearch = true;
     }
 
     @Override
@@ -120,6 +128,17 @@ public class Renderer extends PApplet {
             case '4':
                 finder = new DepthFirstSearch();
                 break;
+            case 'c':
+                for (int x = 0; x < div[0]; x++) {
+                    for (int y = 0; y < div[1]; y++) {
+                        grid.getBoxes()[x][y].setWalkable(true);
+                    }
+                }
+                break;
+            case 'r':
+                start = new int[]{random.nextInt(div[0]), random.nextInt(div[1])};
+                end = new int[]{random.nextInt(div[0]), random.nextInt(div[1])};
+                refreshSearch();
             default:
                 return;
         }
@@ -133,16 +152,16 @@ public class Renderer extends PApplet {
         stroke(92, 92, 92);
 
 
-        div = new int[]{30, 20};
+        div = new int[]{60, 40};
         boxWidth = new int[]{dim[0] / div[0], dim[1] / div[1]};
         grid = new Grid(div);
         finder = new BreadthFirstSearch();
         options = new Options('m', false, true);
         start = new int[]{2, 2};
         end = new int[]{20, 15};
-
+        renderSearch = true;
+        random = new Random();
         refreshSearch();
-
 
     }
 
@@ -163,6 +182,5 @@ public class Renderer extends PApplet {
         path = (ArrayList<int[]>) finder.findPath(start, end, grid, options);
         logger = finder.getStateLogger();
     }
-
 
 }
