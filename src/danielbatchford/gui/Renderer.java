@@ -36,8 +36,9 @@ public class Renderer extends PApplet {
     int[] start;
     int[] end;
 
-    int textScale;
+    int textSize;
     boolean renderSearch;
+    boolean showMenu;
 
     Random random;
 
@@ -145,6 +146,9 @@ public class Renderer extends PApplet {
             case 'r':
                 refreshStartAndEnd();
                 break;
+            case 'm':
+                showMenu = !showMenu;
+                return;
             default:
                 return;
         }
@@ -163,9 +167,9 @@ public class Renderer extends PApplet {
         frameRate(60);
         stroke(39, 48, 67);
 
-        textScale = 50;
-        textSize(32);
-        textFont(createFont("Arial", (float) dim[0] / textScale), (float) dim[0] / textScale);
+        textSize = 30;
+        //textSize(textSize);
+        textFont(createFont("Arial", textSize), textSize);
 
         divCount = 20;
         setDivFactor();
@@ -177,6 +181,8 @@ public class Renderer extends PApplet {
         options = new Options('m', false, true);
 
         renderSearch = true;
+        showMenu = false;
+
         random = new Random();
         refreshStartAndEnd();
         refreshSearch();
@@ -214,8 +220,20 @@ public class Renderer extends PApplet {
     }
 
     void drawText(String s) {
-        fill(0, 0, 0);
-        text(s, 15, dim[1] - 15);
+
+        if(showMenu){
+            fill(255,255,255,100);
+            rect(0,dim[1]-220,600,220);
+            fill(0, 0, 0);
+            text("Use the mouse to place obstacles", 15, dim[1]-55);
+            text("Press R to randomise start and end", 15, dim[1]-95);
+            text("Press C to clear board", 15, dim[1]-135);
+            text("Use 1-4 to select searching algorithms", 15,dim[1]-175);
+            text("Currently using "+ s, 15, dim[1] - 15);
+        }
+        else{
+            text("Press M", 15, dim[1]-55);
+        }
     }
 
     void refreshSearch() {
