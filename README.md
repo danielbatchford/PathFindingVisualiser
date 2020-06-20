@@ -15,10 +15,12 @@ are implemented:
 Barriers (un-walkable tiles) can be added and removed from the screen by dragging the mouse over a tile
 and the start and goal node can also be moved in the same way.
 ## How To Run
-To do
+To run, execute the `.jar` file in the main directory:  
+`java -jar PathFindingVisualiser.jar`
 ## Controls
   - `M` to toggle the menu
   - `D` to toggle diagonal movement
+  - `H` to toggle between Euclidian and Manhattan distance
   - `P` to toggle pause
   - `R` to randomise start and goal positions
   - `C` to clear the board

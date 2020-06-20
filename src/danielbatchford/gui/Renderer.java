@@ -26,10 +26,10 @@ public class Renderer extends PApplet implements Constants{
     //Calculated path
     ArrayList<int[]> path;
 
-    //Options object used in pathfinding library
+    //Options object used in path-finding library
     Options options;
 
-    //Finder used in pathfinding library
+    //Finder used in path-finding library
     PathFinder finder;
 
     //Holds information about the open and closed lists at each step in a search
@@ -37,6 +37,9 @@ public class Renderer extends PApplet implements Constants{
 
     //Whether to allow diagonal movement
     boolean diagonal = false;
+
+    //Use Manhattan ('m') or Euclidean ('e) distance
+    char distanceMode = 'm';
 
     //Open and closed lists retrieved from StateLogger
     ArrayList<Box> openList;
@@ -74,20 +77,24 @@ public class Renderer extends PApplet implements Constants{
         frameRate(FRAME_RATE);
 
         //Despite stroke weight being 0, a small stroke is still displayed which is intended
-        strokeWeight(0);
+        strokeWeight(1);
 
         //Set rectangle stroke colour
         stroke(WALL_COL[0],WALL_COL[1],WALL_COL[2]);
 
         //Initialise a font
-        textFont(createFont(TEXT_FONT, TEXT_SIZE), TEXT_SIZE);
+        textFont(createFont(FONT_FILENAME, TEXT_SIZE, true), TEXT_SIZE);
 
         textData = new String[]{
                 "Press M",
-                "Currently Using",
-                "Press D to toggle diagonal",
+                "Currently Using: ",
+                "Allow Diagonal: ",
+                "Distance Mode: ",
+                "----------------------------------------------------------",
+                "Press D to toggle diagonal movement",
                 "Press P To Toggle Pause",
                 "Press R To Randomise Start & End Positions",
+                "Press H to Toggle Between Euclidian and Manhattan Distance",
                 "Press C To Clear The Board",
                 "Use The Mouse To Place Obstacles / Move Start & End Positions",
                 "Use Keys 1-4 To Select Searching Algorithms"};
@@ -104,7 +111,7 @@ public class Renderer extends PApplet implements Constants{
         //Initialise searching library objects
         grid = new Grid(div);
         finder = new BreadthFirstSearch();
-        options = new Options('m', diagonal, true);
+        options = new Options(distanceMode, diagonal, true);
 
         //Initialise start and end in center of screen, +- an offset
         start = new int[]{div[0] / 2 - 3, div[1] / 2};
@@ -287,6 +294,12 @@ public class Renderer extends PApplet implements Constants{
                 diagonal = !diagonal;
                 options = new Options('m', diagonal, true);
                 break;
+
+            case 'h': //Change between Euclidean and Manhattan distance
+                distanceMode = (distanceMode == 'm') ? 'e':'m';
+                options = new Options(distanceMode,diagonal,true);
+                break;
+
             default:
                 return;
         }
@@ -307,9 +320,6 @@ public class Renderer extends PApplet implements Constants{
         size(dim[0], dim[1]);
 
         fullScreen();
-
-        //No anti aliasing
-        noSmooth();
     }
 
     //Draw a box to the screen at grid co-ordinate
@@ -351,7 +361,11 @@ public class Renderer extends PApplet implements Constants{
         if (showMenu) {
 
             //Update current search type
-            textData[1] = "Currently Using " + searchType;
+            textData[1] = "Currently Using: " + searchType;
+            String diagonalText = (diagonal) ? "True" : "False";
+            textData[2] = "Allow Diagonal: "+diagonalText;
+            String distanceText = (distanceMode == 'm') ? "Manhattan" : "Euclidean";
+            textData[3] = "Distance Mode: " + distanceText;
 
             //Draw text items at a fixed vertical spacing from each other
             for (int i = 1, max = textData.length; i < max; i++) {
@@ -399,6 +413,7 @@ public class Renderer extends PApplet implements Constants{
         grid.getBoxes()[start[0]][start[1]].setWalkable(true);
         grid.getBoxes()[end[0]][end[1]].setWalkable(true);
     }
+
     /*Calculates the number of horizontal and vertical divisions to make. This uses DIV_COUNT as the shortest screen dimension, scaling
     the other dimension up accordingly*/
     void setDivFactor() {

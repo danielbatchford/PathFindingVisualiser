@@ -2,7 +2,7 @@ package danielbatchford.gui;
 
 import processing.core.PApplet;
 
-public class PathFindingVisualisation {
+public class PathFindingVisualiser {
 
     public static void main(String[] args) {
 
