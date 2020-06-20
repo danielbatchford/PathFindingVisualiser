@@ -1,8 +1,0 @@
-allow diagonal toggle
-about pane on right with control descriptions
-
-undo support
-pause support
-drag start and end squares
-
-always make start walkable. If attempt is made to alter square, ignore it

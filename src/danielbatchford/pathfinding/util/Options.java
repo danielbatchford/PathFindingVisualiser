@@ -10,22 +10,15 @@ public class Options {
         this.distanceMetric = distanceMetric;
         this.allowDiagonal = allowDiagonal;
         this.attachStateLogger = attachStateLogger;
-
-        validateDistanceMetric();
     }
 
     public Options(char distanceMetric, boolean allowDiagonal) {
         this.distanceMetric = distanceMetric;
         this.allowDiagonal = allowDiagonal;
-
-        validateDistanceMetric();
     }
 
     public Options(char distanceMetric) {
         this.distanceMetric = distanceMetric;
-    }
-
-    private void validateDistanceMetric() {
     }
 
 }

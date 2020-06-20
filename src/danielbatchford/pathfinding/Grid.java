@@ -70,7 +70,7 @@ public class Grid {
                 neighbors.add(boxes[boxCord[0] + 1][boxCord[1] - 1]);
             }
         }
-
+Collections.shuffle(neighbors);
         return neighbors;
     }
 
