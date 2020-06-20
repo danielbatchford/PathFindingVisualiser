@@ -1,4 +1,4 @@
-# PathFindingVisualiser
+# A 2D Grid Pathfinding Visualiser
 
 ## About
 This is a grid path-finding visualiser built in Java, utilising [Processing](https://github.com/processing/processing) for GUI rendering.
