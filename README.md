@@ -26,7 +26,6 @@ To do
   - Use number keys 1-4 to select different searching algorithms
               
 ## Sample Simulation
-A sample screenshot is included below:
 ![alt text](https://github.com/danielbatchford/PathFindingVisualiser/blob/master/sample.gif)
 
 
