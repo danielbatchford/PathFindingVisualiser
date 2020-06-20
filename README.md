@@ -1,8 +1,8 @@
-# PathFindingVisualiser
+# A 2D Grid Pathfinding Visualiser
 
 ## About
 This is a grid path-finding visualiser built in Java, utilising [Processing](https://github.com/processing/processing) for GUI rendering.
-It utilises [my own path-finding library](https://github.com/danielbatchford/PathFindingVisualiser) in order to 
+It utilises [my own path-finding library](https://github.com/danielbatchford/PathFinding) in order to 
 predict paths through the grid whenever neccessary. 
 
 This visualisation allows various path-finding algorithms to be displayed. Currently, the following algorithms
@@ -28,12 +28,11 @@ To run, execute the `.jar` file in the main directory:
   - Use number keys 1-4 to select different searching algorithms
               
 ## Sample Simulation
-A sample screenshot is included below:
-![alt text][logo]
-[logo]: https://github.com/danielbatchford/PathFindingVisualiser/blob/master/sample.gif?raw=true
+![alt text](https://github.com/danielbatchford/PathFindingVisualiser/blob/master/sample.gif)
+
 
 ## How it works
-Paths are calculated using my own [path-finding library](https://github.com/danielbatchford/PathFindingVisualiser), which calculates paths across a grid.
+Paths are calculated using my own [path-finding library](https://github.com/danielbatchford/PathFinding), which calculates paths across a grid.
 When the state of the grid changes (clearing the grid, marking squares unwalkable, changing search type etc), a new path is calculated.
 
 Since paths in this visualisation are computed before any screen update occurs, a logger built into the pathfinding library
