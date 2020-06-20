@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 
-public class Renderer extends PApplet implements Constants{
+public class Renderer extends PApplet implements Constants {
 
     //Dimensions of screen, number of divisions and pixel box width respectively
     int[] dim;
@@ -68,8 +68,6 @@ public class Renderer extends PApplet implements Constants{
     boolean holdingEnd = false;
 
 
-
-
     //Called on Processing PApplet initialisation
     @Override
     public void setup() {
@@ -80,7 +78,7 @@ public class Renderer extends PApplet implements Constants{
         strokeWeight(1);
 
         //Set rectangle stroke colour
-        stroke(WALL_COL[0],WALL_COL[1],WALL_COL[2]);
+        stroke(WALL_COL[0], WALL_COL[1], WALL_COL[2]);
 
         //Initialise a font
         textFont(createFont(FONT_FILENAME, TEXT_SIZE, true), TEXT_SIZE);
@@ -99,14 +97,10 @@ public class Renderer extends PApplet implements Constants{
                 "Use The Mouse To Place Obstacles / Move Start & End Positions",
                 "Use Keys 1-4 To Select Searching Algorithms"};
 
-        textBoxHeight = textData.length*TEXT_SPACING + 3* TEXT_PADDING;
+        textBoxHeight = textData.length * TEXT_SPACING + 3 * TEXT_PADDING;
 
         //Default search
         searchType = "Breadth First Search";
-
-        //Initialise the number of subdivisions
-        setDivFactor();
-        boxWidth = new int[]{dim[0] / div[0], dim[1] / div[1]};
 
         //Initialise searching library objects
         grid = new Grid(div);
@@ -164,11 +158,19 @@ public class Renderer extends PApplet implements Constants{
     @Override
     public void mousePressed() {
 
-        //Get the box at mouse co-ordinates
-        Box selectedBox = grid.getBoxes()[mouseX * div[0] / dim[0]][mouseY * div[1] / dim[1]];
+        //Get the grid co-ordinate at the mouse location
+        int[] mouseCords = new int[]{mouseX / boxWidth[0], mouseY / boxWidth[1]};
 
-        holdingStart = Arrays.equals(start,selectedBox.getCord());
-        holdingEnd = Arrays.equals(end,selectedBox.getCord());
+        //Check the user has not clicked outside the screen
+        if (mouseCords[0] >= div[0] || mouseCords[1] >= div[1]) {
+            return;
+        }
+
+        //Get the box at grid co-ordinates of mouse
+        Box selectedBox = grid.getBoxes()[mouseCords[0]][mouseCords[1]];
+
+        holdingStart = Arrays.equals(start, selectedBox.getCord());
+        holdingEnd = Arrays.equals(end, selectedBox.getCord());
 
         //If mouse selected a start or end box
         if (holdingStart || holdingEnd) {
@@ -195,9 +197,16 @@ public class Renderer extends PApplet implements Constants{
     @Override
     public void mouseDragged() {
 
-        //Get the box at mouse co-ordinates
-        Box selectedBox = grid.getBoxes()[mouseX / boxWidth[0]][mouseY / boxWidth[1]];
+        //Get the grid co-ordinate at the mouse location
+        int[] mouseCords = new int[]{mouseX / boxWidth[0], mouseY / boxWidth[1]};
 
+        //Check the user has not clicked outside the screen
+        if (mouseCords[0] >= div[0] || mouseCords[1] >= div[1]) {
+            return;
+        }
+
+        //Get the box at grid co-ordinates of mouse
+        Box selectedBox = grid.getBoxes()[mouseCords[0]][mouseCords[1]];
 
         if (holdingStart) {
             //Draw previous position of dragged box as a normal box
@@ -282,8 +291,8 @@ public class Renderer extends PApplet implements Constants{
                 drawClosedList();
                 drawOpenList();
 
-                //Needed to redraw a path after screenflush, if the visual search is completed
-                if(!renderSearch) drawPath();
+                //Needed to redraw a path after screen flush, if the visual search is completed
+                if (!renderSearch) drawPath();
                 return;
 
             case 'p':
@@ -296,8 +305,8 @@ public class Renderer extends PApplet implements Constants{
                 break;
 
             case 'h': //Change between Euclidean and Manhattan distance
-                distanceMode = (distanceMode == 'm') ? 'e':'m';
-                options = new Options(distanceMode,diagonal,true);
+                distanceMode = (distanceMode == 'm') ? 'e' : 'm';
+                options = new Options(distanceMode, diagonal, true);
                 break;
 
             default:
@@ -310,13 +319,19 @@ public class Renderer extends PApplet implements Constants{
     }
 
 
-
     @Override
     public void settings() {
 
         //Get system screen size, initialises this in dim array then sets processing to use this size
         Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-        dim = new int[]{size.width, size.height};
+
+        //Initialise the number of subdivisions
+        setDivFactor(size.width, size.height);
+
+        //Note the modulo used here due to abnormal screen resolutions @Jack
+        dim = new int[]{size.width - size.width % div[0], size.height - size.height % div[1]};
+
+        boxWidth = new int[]{dim[0] / div[0], dim[1] / div[1]};
         size(dim[0], dim[1]);
 
         fullScreen();
@@ -348,11 +363,11 @@ public class Renderer extends PApplet implements Constants{
     void drawMenu() {
 
         //Draw a background rectangle
-        if(showMenu) {
+        if (showMenu) {
             fill(255, 255, 255, 255);
             rect(0, dim[1] - textBoxHeight, TEXT_BOX_WIDTH, textBoxHeight);
         }
-        fill(TEXT_COL[0],TEXT_COL[1],TEXT_COL[2]);
+        fill(TEXT_COL[0], TEXT_COL[1], TEXT_COL[2]);
 
         //Draws "Press m" text
         text(textData[0], TEXT_PADDING, dim[1] - TEXT_SPACING);
@@ -363,33 +378,33 @@ public class Renderer extends PApplet implements Constants{
             //Update current search type
             textData[1] = "Currently Using: " + searchType;
             String diagonalText = (diagonal) ? "True" : "False";
-            textData[2] = "Allow Diagonal: "+diagonalText;
+            textData[2] = "Allow Diagonal: " + diagonalText;
             String distanceText = (distanceMode == 'm') ? "Manhattan" : "Euclidean";
             textData[3] = "Distance Mode: " + distanceText;
 
             //Draw text items at a fixed vertical spacing from each other
             for (int i = 1, max = textData.length; i < max; i++) {
-                text(textData[i], TEXT_PADDING, dim[1] - TEXT_SPACING * (i+1));
+                text(textData[i], TEXT_PADDING, dim[1] - TEXT_SPACING * (i + 1));
             }
         }
     }
 
     void drawPath() {
-        fill(PATH_COL[0],PATH_COL[1],PATH_COL[2]);
+        fill(PATH_COL[0], PATH_COL[1], PATH_COL[2]);
         for (int[] cords : path) {
             drawBox(cords);
         }
     }
 
     void drawOpenList() {
-        fill(OPEN_LIST_COL[0],OPEN_LIST_COL[1],OPEN_LIST_COL[2]);
+        fill(OPEN_LIST_COL[0], OPEN_LIST_COL[1], OPEN_LIST_COL[2]);
         for (Box b : openList) {
             drawBox(b.getCord());
         }
     }
 
     void drawClosedList() {
-        fill(CLOSED_LIST_COL[0],CLOSED_LIST_COL[1],CLOSED_LIST_COL[2]);
+        fill(CLOSED_LIST_COL[0], CLOSED_LIST_COL[1], CLOSED_LIST_COL[2]);
         for (Box b : closedList) {
             drawBox(b.getCord());
         }
@@ -416,19 +431,15 @@ public class Renderer extends PApplet implements Constants{
 
     /*Calculates the number of horizontal and vertical divisions to make. This uses DIV_COUNT as the shortest screen dimension, scaling
     the other dimension up accordingly*/
-    void setDivFactor() {
+    void setDivFactor(int screenWidth, int screenHeight) {
         div = new int[2];
 
-        //Landscape Monitor
-        if (dim[0] >= dim[1]) {
-            div[0] = (int) ((float) DIV_COUNT * ((float) dim[0] / (float) dim[1]));
+        if (screenWidth >= screenHeight) {
+            div[0] = (int) ((float) DIV_COUNT * ((float) screenWidth / (float) screenHeight));
             div[1] = DIV_COUNT;
-        }
-
-        //Portrait Monitor?
-        else {
+        } else {
             div[0] = DIV_COUNT;
-            div[1] = (int) ((float) DIV_COUNT * ((float) dim[0] / (float) dim[1]));
+            div[1] = (int) ((float) DIV_COUNT * ((float) screenHeight / (float) screenWidth));
         }
     }
 }
