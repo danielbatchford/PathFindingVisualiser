@@ -27,8 +27,8 @@ To do
               
 ## Sample Simulation
 A sample screenshot is included below:
-![alt text][logo]
-[logo]: https://github.com/danielbatchford/PathFindingVisualiser/blob/master/sample.gif
+![alt text](https://github.com/danielbatchford/PathFindingVisualiser/blob/master/sample.gif)
+
 
 ## How it works
 Paths are calculated using my own [path-finding library](https://github.com/danielbatchford/PathFindingVisualiser), which calculates paths across a grid.
