@@ -31,7 +31,7 @@ public interface Constants {
     //Width of text box in pixels
     int TEXT_BOX_WIDTH = 1000;
 
-    String FONT_FILENAME = "font.ttf";
+    String FONT_FILENAME = "font.TTF";
 
     int FRAME_RATE = 60;
 
